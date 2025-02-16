@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "author": "Shubham Verma",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": -86.4,
+      "left": 302.44,
+      "attrs": { "fastTLS": "1" }
+    },
+    { "type": "chip-mq135", "id": "chip1", "top": 77.82, "left": 494.4, "attrs": {} },
+    { "type": "chip-mq135", "id": "chip2", "top": -104.58, "left": 139.2, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "chip2:A0", "esp:35", "violet", [ "h-28.8", "v67.2" ] ],
+    [ "chip2:GND", "esp:GND.2", "black", [ "h-19.2", "v-28.8", "h278.4" ] ],
+    [ "chip2:VCC", "esp:5V", "red", [ "h-38.4", "v211.2", "h201.45" ] ],
+    [ "chip1:VCC", "esp:5V", "red", [ "h-28.8", "v57.6", "h-144.15" ] ],
+    [ "chip1:GND", "esp:GND.3", "black", [ "h-67.2", "v48" ] ],
+    [ "chip1:A0", "esp:21", "cyan", [ "h-48", "v-115.2" ] ]
+  ],
+  "dependencies": {}
+}
