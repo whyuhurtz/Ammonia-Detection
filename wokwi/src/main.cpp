@@ -2,12 +2,16 @@
 
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiClient.h>
 
-const int PIN_SENSOR1 = 21;       // Sensor 1 MQ-135 connect to pin 34.
+WiFiClient client;
+HTTPClient http;
+
+const int PIN_SENSOR1 = 34;       // Sensor 1 MQ-135 connect to pin 34.
 const int PIN_SENSOR2 = 35;       // Sensor 1 MQ-135 connect to pin 34.
 const char* SSID = "Wokwi-GUEST"; // Default SSID in Wokwi.
 const char* PASSWORD = "";        // SSID not require a password in Wokwi.
-const char* NGROK_URL = "https://3d93-110-137-192-50.ngrok-free.app/sendSensorData"; // Replace with your Ngrok URL.
+const char* FLASK_SERVER_URL = "http://whyuhurtz.pythonanywhere.com/sendDataSensor"; // Replace with your PythonAnywhere/Ngrok URL. Don't use HTTPS!.
 
 void setup()
 {
@@ -42,15 +46,13 @@ void loop()
 
   if (WiFi.status() == WL_CONNECTED)
   {
-    HTTPClient http;
-
-    String serverPath = String(NGROK_URL) + "?ppm1=" + String(ppmValueSensor1) + "&ppm2=" + String(ppmValueSensor2);
+    String serverPath = String(FLASK_SERVER_URL) + "?ppm1=" + String(ppmValueSensor1) + "&ppm2=" + String(ppmValueSensor2);
     Serial.print("Connecting to server: ");
     Serial.println(serverPath);
-
+    
     // Initialize HTTP connection to serverPath.
-    http.begin(serverPath);
-    // http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+    http.begin(client, serverPath);
+    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
 
     // Send HTTP GET request.
     int httpCode = http.GET();
@@ -77,5 +79,5 @@ void loop()
     Serial.println("WiFi not connected");
   }
 
-  delay(1000);  // Kirim data setiap 1 detik
+  delay(1000);  // Send data every 1 second.
 }

@@ -21,7 +21,7 @@
     [ "chip2:VCC", "esp:5V", "red", [ "h-38.4", "v211.2", "h201.45" ] ],
     [ "chip1:VCC", "esp:5V", "red", [ "h-28.8", "v57.6", "h-144.15" ] ],
     [ "chip1:GND", "esp:GND.3", "black", [ "h-67.2", "v48" ] ],
-    [ "chip1:A0", "esp:21", "cyan", [ "h-48", "v-115.2" ] ]
+    [ "chip1:A0", "esp:34", "cyan", [ "h-48", "v-115.2" ] ]
   ],
   "dependencies": {}
 }
