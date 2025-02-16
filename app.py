@@ -19,7 +19,7 @@ def send_data_sensor():
   ppm2 = escape(request.args.get("ppm2", "0"))
 
   # URL google app script.
-  url: str = f"https://script.google.com/macros/s/AKfycbyh3U4Ot9Yo26UjdX4z3HBwSK7D9kHXf3ajyovZWEkHlf7o02ZS61XCgeiTxXxefK0eOA/exec?action=write&ppm1={ppm1}&ppm2={ppm2}"
+  url: str = f"https://script.google.com/macros/s/AKfycbz5I_b054Vq1oJZR1t_F763j0Fb5ta1u_upure5fQeGuSkskIKw-5YxAvQ4Fft-SI1A/exec?action=write&ppm1={ppm1}&ppm2={ppm2}"
 
   # Send data to google sheet via web app url.
   response = requests.get(url)

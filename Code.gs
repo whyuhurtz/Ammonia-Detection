@@ -1,115 +1,113 @@
 // Reference Wokwi Project: https://wokwi.com/projects/390101282644204545
 // Reference YouTube video: https://www.youtube.com/watch?v=u7TYu61l0t4
 // Source code: https://drive.google.com/file/d/1650fl6l9afs2_QvLtxjDkTIP77LD9SM7/view
-// Web App URL: https://script.google.com/macros/s/AKfycbyh3U4Ot9Yo26UjdX4z3HBwSK7D9kHXf3ajyovZWEkHlf7o02ZS61XCgeiTxXxefK0eOA/exec
+// Web App URL: https://script.google.com/macros/s/AKfycbz5I_b054Vq1oJZR1t_F763j0Fb5ta1u_upure5fQeGuSkskIKw-5YxAvQ4Fft-SI1A/exec
 // DON'T USE PNJ ACCOUNT, USE PERSONAL EMAIL ACCOUNT INSTEAD!.
 
+// Constants for Google Sheet ID and Sheet Name.
+const SHEET_ID = '10ahD_GUE2ebamJ2kfBSvB5ndD5VfSDZ6henEgFErZkQ';  // CHANGE THIS WITH YOUR GOOGLE SHEETS ID.
+const SHEET_NAME = 'Ammonia'; // CHANGE THIS WITH YOUR SHEET NAME.
+
 // Remove unrelated characters.
-function stripQuotes( value )
+function stripQuotes(value)
 {
-  return value.replace(/^["']|['"]$/g, "");
+  return value.replace(/^["']|["']$/g, "");
 }
 
 // HTTP GET Request to receive data from 2 ESP32 nodes.
 function doGet(e)
 {
   Logger.log(JSON.stringify(e));
-  let result = "";
-  if (!e || e.parameter == 'undefined')
+  let result = '';
+  
+  if (e.parameter == 'undefined')
   {
-    result = 'No Parameters';
+    result = 'Error: No parameters are passed!';
+    return ContentService.createTextOutput("Error: No parameters are passed!");
   }
   else
   {
-    result = 'Ok';
-    const SHEET_ID = '1gCYPZxckDK4Dhkb8G7LFAgqAv52jlYyzWHo3YGx7u04';  // CHANGE THIS WITH YOUR GOOGLE SHEETS ID.
-    const SHEET_NAME = 'Ammonia';                                     // CHANGE THIS WITH YOUR SHEET NAME.
+    const sheetOpen = SpreadsheetApp.openById(SHEET_ID);
+    const sheetTarget = sheetOpen.getSheetByName(SHEET_NAME);
 
-    let sheetOpen = SpreadsheetApp.openById(SHEET_ID);
-    Logger.log("Spreadsheet Opened: " + sheetOpen.getName());
-
-    let sheetTarget = sheetOpen.getSheetByName(SHEET_NAME);
     if (!sheetTarget)
     {
       Logger.log("Sheet not found: " + SHEET_NAME);
-      return ContentService.createTextOutput("Error: Sheet not found.");
+      return ContentService.createTextOutput("Error: Sheet not found!.");
     }
 
-    let newRow = sheetTarget.getLastRow()+1;
+    // Get the last rows.
+    let newRow = sheetTarget.getLastRow() + 1;
 
-    // Initiate data for specific row and column.
+    // Initiate the rows.
     let rowDataLog = [];
-    let dataForA7; // Current date and time.
-    let dataForB7; // PPM value of sensor 1.
-    let dataForC7; // PPM value of sensor 2.
-    let dataForD7; // Average PPM values.
-    let dataForE7; // Status sent sensor data.
+    let dataForA7;
+    let dataForB7 = 0;
+    let dataForC7 = 0;
+    let dataForD7;
+    let dataForE7;
 
-    let currentDate = Utilities.formatDate(new Date(), "Asia/Jakarta", 'dd/MM/YYYY');
-    let currentTime = Utilities.formatDate(new Date(), "Asia/Jakarta", "HH:MM:ss");
-    let currentDateAndTime = String(currentDate + " " + currentTime);
+    // Fill the dataForA7 with currentDateAndTime.
+    let currentDateAndTime = Utilities.formatDate(new Date(), "Asia/Jakarta", 'dd/MM/YYYY HH:mm:ss');
     rowDataLog[0] = currentDateAndTime;
     dataForA7 = currentDateAndTime;
 
-    let actionValue = '';
+    // Initalize action param.
+    let action = '';
     for (let param in e.parameter)
     {
-      Logger.log("In for loop, param=" + param);
-      let value = stripQuotes(e.parameter[param]);
-      Logger.log(param + ":" + e.parameter[param]);
-      switch(param)
-      {
+      Logger.log('In for loop, param=' + param);
+      var value = stripQuotes(e.parameter[param]);
+      Logger.log(param + ':' + e.parameter[param]);
+      switch (param) {
         case 'action':
-          actionValue = value;
+          action = value;
           break;
 
         case 'ppm1':
           rowDataLog[1] = value;
-          dataForB7 = value;
-          result += ', PPM from Node 1 written on column B';
+          dataForB7 = parseFloat(value);
+          result += 'Success: PPM1 value written on column B';
           break;
-        
+
         case 'ppm2':
           rowDataLog[2] = value;
-          dataForC7 = value;
-          result += ', PPM from Node 2 written on column C';
+          dataForC7 = parseFloat(value);
+          result += ', PPM2 value written on column C';
           break;
 
         default:
           result += ", unsupported parameter";
       }
+
+      // Calculate average for D7
+      rowDataLog[3] = (parseFloat(dataForB7) + parseFloat(dataForC7)) / 2;
+      dataForD7 = (parseFloat(dataForB7) + parseFloat(dataForC7)) / 2;
+      
+      // Determine status for E7
+      rowDataLog[4] = (parseFloat(dataForB7) > 0 && parseFloat(dataForC7) > 0) ? "Success" : "Incomplete";
+      dataForE7 = (parseFloat(dataForB7) > 0 && parseFloat(dataForC7) > 0) ? "Success" : "Incomplete";
+
     }
 
-    // Conditions for writing data received from ESP32 to Google Sheets.
-    if (actionValue == 'write')
+    if (action == 'write')
     {
-      // Divide PPM value 1 and PPM value 2 to get the average.
-      dataForD7 = (dataForB7 + dataForC7) / 2;
-
-      // Add text success after write data to Sheet.
-      dataForE7 = "Success";
-
-      // Writes data to the "DHT11 Sensor Data Logger" section.
       Logger.log(JSON.stringify(rowDataLog));
       let newRangeDataLog = sheetTarget.getRange(newRow, 1, 1, rowDataLog.length);
       newRangeDataLog.setValues([rowDataLog]);
-      
-      // Write the data to the "Latest DHT11 Sensor Data" section.
-      let RangeDataLatest = sheetTarget.getRange('A7:E7');
-      RangeDataLatest.setValues([[dataForA7, dataForB7, dataForC7, dataForD7, dataForE7]]);
+
+      // RangeDataLatest = sheetTarget.getRange('A7:E7');
+      // RangeDataLatest.setValues([[dataForA7, dataForB7, dataForC7, dataForD7, dataForE7]]);
 
       return ContentService.createTextOutput(result);
     }
     
-    // Conditions for sending data to ESP32 when ESP32 reads data from Google Sheets.
-    if (actionValue == 'read')
+    if (action == 'read')
     {
-      // Use the line of code below if you want ESP32 to read data from columns I3 to O3 (Date,Time,Sensor Reading Status,Temperature,Humidity,Switch 1, Switch 2).
-      // let statusSendData = sheetTarget.getRange('I3:O3').getDisplayValues();
-      
-      // Use the line of code below if you want ESP32 to read data from columns K3 to O3 (Sensor Reading Status,Temperature,Humidity,Switch 1, Switch 2).
       let statusSendData = sheetTarget.getRange('E7').getValues();
       return ContentService.createTextOutput(statusSendData);
     }
+
+    return ContentService.createTextOutput('Invalid action');
   }
 }

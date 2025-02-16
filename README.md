@@ -28,6 +28,12 @@
 - Terakhir, compile C ke wasm pakai perintah: `emcc mq135.chip.c -o mq135.chip.wasm -s EXPORTED_FUNCTIONS='["_attrInit", "_attrRead", "_pinInit", "_pinDACWrite", "_timerInit", "_timerStart"]' -s ERROR_ON_UNDEFINED_SYMBOLS=0`. Jangan lupa, pindahkan hasil kompilasi wasm tersebut ke folder `./wokwi/chips/`. Untuk namanya samakan saja dengan nama custom chip-nya, yaitu `./wokwi/chips/mq135.chip.wasm`.
 - Catatan tambahan: untuk variabel `FLASK_APP_URL` pada file `./wokwi/src/main.cpp` kalian bisa isikan dengan **url flask app yang running**, bisa di local atau pun di upload ke [pythonanywhere.com](https://pythonanywhere.com) supaya bisa diakses dari internet. Syaratnya adalah jika flask app running di local, maka harus diekspos ke publik/internet menggunakan tunelling, seperti *Ngrok*/*Cloudflared*.
 
+## Attachments
+
+- [Sample Google Sheets](https://docs.google.com/spreadsheets/d/10ahD_GUE2ebamJ2kfBSvB5ndD5VfSDZ6henEgFErZkQ/edit?usp=sharing)
+- [Wokwi Project](https://wokwi.com/projects/423022837140786177)
+- [Video Simulation](https://mega.nz/file/PUwEGS4B#qgLI2ZcU1Pab8HAguwFwNwRe09544eH5V2b1BQy-nxc)
+
 ## Credits
 
 - [pythonanywhere](https://pythonanywhere) by Anaconda.

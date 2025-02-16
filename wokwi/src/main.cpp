@@ -23,7 +23,8 @@ void setup()
   Serial.println("WiFi mode: WIFI_STA");
 
   WiFi.begin(SSID, PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(100);
     Serial.print(".");
   }
@@ -47,7 +48,7 @@ void loop()
   if (WiFi.status() == WL_CONNECTED)
   {
     String serverPath = String(FLASK_SERVER_URL) + "?ppm1=" + String(ppmValueSensor1) + "&ppm2=" + String(ppmValueSensor2);
-    Serial.print("Connecting to server: ");
+    Serial.print("Sending HTTP GET request to Flask server: ");
     Serial.println(serverPath);
     
     // Initialize HTTP connection to serverPath.
@@ -56,20 +57,11 @@ void loop()
 
     // Send HTTP GET request.
     int httpCode = http.GET();
-    if (httpCode > 0)
-    {
-      Serial.print("HTTP GET request success, status code: ");
-      Serial.println(httpCode);
-    }
-    else
-    {
-      Serial.print("HTTP GET request failed, error code: ");
-      Serial.println(httpCode);
-    }
 
     // Get the response payload.
     String payload = http.getString();
-    Serial.println("Server response: " + payload); 
+    if (payload.length() > 0)
+      Serial.println(payload);
 
     // End the HTTP connection.
     http.end();
@@ -79,5 +71,5 @@ void loop()
     Serial.println("WiFi not connected");
   }
 
-  delay(1000);  // Send data every 1 second.
+  delay(1000);  // Send data every 1s.
 }
