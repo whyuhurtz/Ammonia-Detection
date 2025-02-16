@@ -8,7 +8,7 @@ WiFiClient client;
 HTTPClient http;
 
 const int PIN_SENSOR1 = 34;       // Sensor 1 MQ-135 connect to pin 34.
-const int PIN_SENSOR2 = 35;       // Sensor 1 MQ-135 connect to pin 34.
+const int PIN_SENSOR2 = 35;       // Sensor 2 MQ-135 connect to pin 35.
 const char* SSID = "Wokwi-GUEST"; // Default SSID in Wokwi.
 const char* PASSWORD = "";        // SSID not require a password in Wokwi.
 const char* FLASK_SERVER_URL = "http://whyuhurtz.pythonanywhere.com/sendDataSensor"; // Replace with your PythonAnywhere/Ngrok URL. Don't use HTTPS!.
